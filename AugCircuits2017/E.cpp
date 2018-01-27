@@ -31,9 +31,61 @@ typedef pair<ll,ll> pll;
 #define S                     second
 
 const int MOD = 1000000007;
+const int N = 2e5+5;
+
+ll t, xs, ys, xt, yt, l;
+ll fact[N], ifact[N];
+ll dx, dy, res, S, lim;
+
+ll bigExp(ll a, ll b){
+      if(b==0)
+            return 1;
+      if(b==1)
+            return a;
+      if(b&1)
+            return (a*bigExp(a, b-1))%MOD;
+      ll res = bigExp(a, b>>1);
+      return (res*res)%MOD;
+}
+
+inline void init(){
+      fact[0] = fact[1] = 1;
+      FOR(i, 2, N){
+            fact[i] = (fact[i-1]*i)%MOD;
+      }
+      ifact[N-1] = bigExp(fact[N-1], MOD-2);
+      for(int i=N-2; i>=0; i--){
+            ifact[i] = (ifact[i+1]*(i+1))%MOD;
+      }
+      assert(ifact[10]==bigExp(fact[10], MOD-2));
+}
+
 
 int main()
 {
       FASTIO
+      init();
+      cin>>t;
+      while(t--){
+            res = 0;
+            cin>>xs>>ys>>xt>>yt>>l;
+            dx = abs(xs-xt);
+            dy = abs(ys-yt);
+            S = dx+dy;
+            lim = l - S;
+            if(l<S || lim&1){
+                  cout<<"0\n";
+                  continue;
+            }
+            for(int k=0; k<=lim; k+=2){
+                  ll tmp = fact[l];
+                  tmp = (tmp*ifact[k/2])%MOD;
+                  tmp = (tmp*ifact[(lim-k)/2])%MOD;
+                  tmp = (tmp*ifact[dx+(k/2)])%MOD;
+                  tmp = (tmp*ifact[dy+((lim-k)/2)])%MOD;
+                  res = (res + tmp)%MOD;
+            }
+            cout<<res<<"\n";
+      }
       return 0;
 }
